@@ -27,20 +27,38 @@
           <span class="header__badge">無料 / 60秒</span>
         </p>
         <div class="header__links" aria-label="案内メニュー">
-          <a class="header__action header__action--primary" href="tutorial.html" target="_blank" rel="noopener">
-            <span class="header__action-icon">📖</span>
-            <span><b>はじめての方へ</b><small>使い方を3分で確認</small></span>
+          <a class="header__action header__action--primary" href="v2/index.html">
+            <span class="header__action-icon">▶</span>
+            <span><b>はじめる（迷ったらこちら）</b><small>1問ずつ選ぶだけのかんたん版</small></span>
           </a>
           <a class="header__action" href="samples/index.html">
             <span class="header__action-icon">✨</span>
             <span><b>完成サンプルを見る</b><small>実際に作ったLPを確認</small></span>
           </a>
-          <a class="header__action" href="v2/index.html">
-            <span class="header__action-icon">🪜</span>
-            <span><b>1つずつ進める版</b><small>ステップ版で迷わず進める</small></span>
+          <a class="header__action" href="tutorial.html" target="_blank" rel="noopener">
+            <span class="header__action-icon">📖</span>
+            <span><b>使い方を見る</b><small>3分でわかる説明</small></span>
           </a>
         </div>
+        <p class="header__note">
+          この画面は<b>全項目を1画面で触れるフル機能版</b>です。はじめてなら上の「はじめる」へ。
+        </p>
       </header>
+
+      <!-- これは何？：直接来た人向けの常設イントロ（マスコットが案内） -->
+      <div class="card card--intro">
+        <div class="mascot-note">
+          <img class="mascot-note__img" src="assets/mascot/mascot-think.webp" alt="考えるマスコット" />
+          <div class="mascot-note__body">
+            <h2 class="card__title"><span>✨</span><span>これは何のツール？</span></h2>
+            <p class="card__desc">
+              <b>LP（ランディングページ）</b>＝商品やお店を1ページで紹介する縦長のWebページのこと。
+              このツールは「何をどの順番で書くか」の<b>設計図</b>を、業種・読み手・ゴールを選ぶだけで作ります。
+              できた文章を <b>ChatGPT や Claude に貼る</b>と、原稿やLPそのものに変わります（ツール自体は無料・AI不要）。
+            </p>
+          </div>
+        </div>
+      </div>
 
       <!-- タブ（PromptMaker シリーズ。app.js が自動生成） -->
       <nav class="tabs" id="tabs" aria-label="PromptMaker シリーズ"></nav>
@@ -74,7 +92,13 @@
 
           <!-- ステップ②：画像を用意する（template が imageSlots を持つときだけ表示） -->
           <div class="card" id="imageCard" hidden>
-            <h2 class="card__title"><span>②</span><span>画像を用意する（任意）</span></h2>
+            <div class="mascot-note" style="margin-bottom:14px">
+              <img class="mascot-note__img" src="assets/mascot/mascot-image.webp" alt="画像を持つマスコット" />
+              <div class="mascot-note__body">
+                <h2 class="card__title"><span>②</span><span>画像を用意する（任意）</span></h2>
+                <p class="card__desc" style="margin-bottom:0">画像も使うなら、プロンプトをコピーして画像生成AIで作り、ここに戻すだけ。使わなくてもOK。</p>
+              </div>
+            </div>
             <p class="card__desc">
               <b>①</b>各スロットの「📋 プロンプト」をコピー →
               <b>②</b>画像生成AI（Image 2.0 / Midjourney など）で作成 →
@@ -124,6 +148,14 @@
               <span class="output-count" id="charCount">0 文字</span>
             </div>
 
+            <!-- 貼る先の案内（マスコット） -->
+            <div class="mascot-hint">
+              <img class="mascot-hint__img" src="assets/mascot/mascot-launch.webp" alt="発進するマスコット" />
+              <p class="mascot-hint__text">
+                下の文章を「📋 コピー」→ <b>ChatGPT や Claude に貼って送信</b>。原稿やLPになって返ってきます。
+              </p>
+            </div>
+
             <!-- 仕上がり例（プリセット適用中＆画像があるときだけ表示） -->
             <figure class="sample" id="sample" hidden>
               <img class="sample__img" id="sampleImage" alt="" />
@@ -156,54 +188,4 @@
               <button class="btn" id="btnSave" type="button">
                 <span>💾</span><span>設定を保存</span>
               </button>
-              <button class="btn" id="btnLoad" type="button">
-                <span>📂</span><span>設定を読込</span>
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <!-- プリセット詳細モーダル -->
-    <div class="modal" id="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden>
-      <div class="modal__panel">
-        <button class="modal__close" id="detailClose" type="button" aria-label="閉じる">✕</button>
-        <figure class="modal__media">
-          <img class="modal__img" id="detailImage" alt="" />
-          <figcaption class="modal__caption">仕上がり例</figcaption>
-        </figure>
-        <div class="modal__body">
-          <h3 class="modal__title" id="detailTitle"></h3>
-          <p class="modal__desc" id="detailDesc"></p>
-          <div class="modal__block" id="detailUsesBlock">
-            <h4 class="modal__h4">こんなときに</h4>
-            <ul class="modal__uses" id="detailUses"></ul>
-          </div>
-          <div class="modal__block">
-            <h4 class="modal__h4">埋まる主な設定</h4>
-            <dl class="modal__specs" id="detailSpecs"></dl>
-          </div>
-          <div class="modal__actions">
-            <button class="btn btn--primary" id="detailApplyCopy" type="button">
-              <span>📋</span><span>この設定でコピー</span>
-            </button>
-            <button class="btn" id="detailApply" type="button">
-              <span>✎</span><span>適用だけ（編集する）</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-    <!-- スクリプト（file:// で直接開けるよう module は使わない） -->
-    <script src="js/core.js"></script>
-    <script src="js/template.lp.js"></script>
-    <script src="js/template.visual.js"></script>
-    <script src="js/template.icon.js"></script>
-    <script src="js/imageWorkflow.js"></script>
-    <script src="js/app.js"></script>
-  </body>
-</html>
+  
