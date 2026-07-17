@@ -20,3 +20,6 @@ automation/.env
 automation/.env.*
 automation/node_modules/
 *.key
+
+# 検証用に入れた依存（ルート）。コミットしない。
+node_modules/
