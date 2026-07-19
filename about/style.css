@@ -102,6 +102,7 @@ h1 em { color: var(--rose-deep); font-style: normal; }
 .section--soft { background: var(--surface-soft); }
 .section--ink { background: var(--ink); color: #fff; }
 .section h2, .final-cta h2 { margin-bottom: 18px; font-size: clamp(31px, 4.4vw, 50px); line-height: 1.45; }
+.headline-stack span { display: block; white-space: nowrap; }
 .section-lead { max-width: 690px; margin-bottom: 42px; color: var(--ink-soft); font-size: 15px; line-height: 1.9; }
 .section--ink .section-kicker { color: #dcb8af; }
 
