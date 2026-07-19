@@ -73,47 +73,47 @@
     entryStep: {
       eyebrow: 'まずはここから',
       message: '難しい言葉は使いません。今日の目的に合う作り方を一緒に選びましょう。',
-      image: 'mascot-plain.webp'
+      image: 'mascot-bear-hood.webp'
     },
     originalStep: {
       eyebrow: '最初のタスク',
       message: 'ここでは制作の置き場所だけ整えます。AIから完了報告を受けたらチェックして、次へ進みましょう。',
-      image: 'mascot-setup.webp'
+      image: 'mascot-bear-hood.webp'
     },
     presetStep: {
       eyebrow: '雰囲気が近ければOK',
       message: '完全に同じ業種でなくても大丈夫。色や空気感が近い見本を一つ選んでください。',
-      image: 'mascot-think.webp'
+      image: 'mascot-bear-hood.webp'
     },
     basicStep: {
       eyebrow: 'まずは3つだけ',
       message: '今の時点で一番近い答えを選べば十分です。あとから何度でも変更できます。',
-      image: 'mascot-think.webp'
+      image: 'mascot-bear-hood.webp'
     },
     imageStep: {
       eyebrow: 'ここは飛ばしてもOK',
       message: '画像を使うなら、生成してアップロードするだけ。リネームと軽量化はLPmakerに任せてください。',
-      image: 'mascot-image.webp'
+      image: 'mascot-bear-hood.webp'
     },
     infoStep: {
       eyebrow: '分かる範囲だけ',
       message: '店名や価格など、間違えたくない情報を入れます。未定の項目は空欄で進めます。',
-      image: 'mascot-setup.webp'
+      image: 'mascot-bear-hood.webp'
     },
     advancedStep: {
       eyebrow: 'あと一歩です',
       message: '雰囲気や文章量を調整する仕上げです。こだわらなければ、そのまま次へ進めます。',
-      image: 'mascot-think.webp'
+      image: 'mascot-bear-hood.webp'
     },
     confirmStep: {
       eyebrow: 'ここまでできました',
       message: '内容を確認してコピーしましょう。あとはCodexやClaudeが、LPの実装を引き継げます。',
-      image: 'mascot-launch.webp'
+      image: 'mascot-bear-hood.webp'
     },
     folderStep: {
       eyebrow: '公開したくなったときに',
       message: 'フォルダとGitHubの準備だけを、いつでもここから行えます。今はスキップしても大丈夫です。',
-      image: 'mascot-setup.webp'
+      image: 'mascot-bear-hood.webp'
     }
   };
 
