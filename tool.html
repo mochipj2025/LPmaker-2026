@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LP StructureMaker ― はじめてでも、選んで作れる。</title>
+    <meta name="description" content="はじめてでも、選んで作れる。業種・読み手・ゴールでLPの構成が、画像作成タブでは素材のプロンプトまで揃う。そのままAIに貼れば原稿もサイトも作れます。" />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧱</text></svg>"
+    />
+
+    <link rel="stylesheet" href="css/style.css?v=20260718-4" />
+  </head>
+
+  <body>
+    <div class="shell">
+      <!-- ヘッダー -->
+      <header class="header">
+        <h1 class="header__title">
+          <span class="header__logo">🧱</span>
+          <span>LP StructureMaker</span>
+        </h1>
+        <p class="header__sub">
+          はじめてでも、選んで作れる。LPの構成も、画像素材のプロンプトも、そのままAIに貼るだけで仕上がります。
+          <span class="header__badge">無料 / 60秒</span>
+        </p>
+        <div class="header__links" aria-label="案内メニュー">
+          <a class="header__action header__action--primary" href="v2/index.html">
+            <span class="header__action-icon">▶</span>
+            <span><b>一緒に作る（迷ったらこちら）</b><small>作り方を選んで、一歩ずつ進む伴走ナビ</small></span>
+          </a>
+          <a class="header__action" href="samples/index.html">
+            <span class="header__action-icon">✨</span>
+            <span><b>完成サンプルを見る</b><small>実際に作ったLPを確認</small></span>
+          </a>
+          <a class="header__action" href="index.html">
+            <span class="header__action-icon">🌱</span>
+            <span><b>LPmakerの仕組み</b><small>3つの作り方と伴走の流れ</small></span>
+          </a>
+          <a class="header__action" href="tutorial.html" target="_blank" rel="noopener">
+            <span class="header__action-icon">📖</span>
+            <span><b>使い方を見る</b><small>3分でわかる説明</small></span>
+          </a>
+        </div>
+        <p class="header__note">
+          この画面は<b>全項目を1画面で触れるフル機能版</b>です。はじめてなら上の「一緒に作る」へ。
+        </p>
+      </header>
+
+      <!-- これは何？：直接来た人向けの常設イントロ（マスコットが案内） -->
+      <div class="card card--intro">
+        <div class="mascot-note mascot-note--intro">
+          <img class="mascot-note__img" src="assets/mascot/mascot-bear-hood.webp" alt="案内役の熊フードのもちすら" decoding="async" />
+          <div class="mascot-note__body">
+            <h2 class="card__title"><span>✨</span><span>これは何のツール？</span></h2>
+          </div>
+        </div>
+        <p class="card__desc intro-summary">
+          業種・読み手・ゴールを選ぶだけで、LPの構成案を作れる無料ツールです。
+        </p>
+        <details class="intro-more">
+          <summary>もう少し詳しく</summary>
+          <p>
+            LPは、商品やお店を1ページで紹介する縦長のWebページです。できた構成案をChatGPTやClaudeに貼ると、原稿やLPそのものにできます。
+          </p>
+        </details>
+      </div>
+
+      <!-- タブ（PromptMaker シリーズ。app.js が自動生成） -->
+      <nav class="tabs" id="tabs" aria-label="PromptMaker シリーズ"></nav>
+
+      <!-- 本体：左「設定」／右「見取り図＋設計図」 -->
+      <main class="layout">
+        <!-- 左：設定 -->
+        <section class="column column--form" id="form">
+          <!-- プリセット -->
+          <div class="card">
+            <h2 class="card__title"><span>⚡</span><span>プリセット</span></h2>
+            <p class="card__desc">
+              業種別の見本を1つ選ぶと、設定と設計図がまとまります。迷ったら<b>🎁 おまかせ</b>。
+            </p>
+            <div class="presets" id="presets"></div>
+          </div>
+
+          <!-- 保存済みプリセット（0件のとき hidden） -->
+          <div class="card" id="userPresetSection" hidden>
+            <h2 class="card__title"><span>⭐</span><span>保存した設定</span></h2>
+            <p class="card__desc">このブラウザに保存されています。</p>
+            <div class="presets" id="userPresets"></div>
+          </div>
+
+          <!-- ステップ①：基本設定 -->
+          <div class="card">
+            <h2 class="card__title"><span>①</span><span>基本設定</span></h2>
+            <p class="card__desc">業種・読み手・ゴールを選ぶと、見取り図と出力が変わります。</p>
+            <div id="basicFields"></div>
+          </div>
+
+          <!-- ステップ②：画像を用意する（template が imageSlots を持つときだけ表示） -->
+          <div class="card" id="imageCard" hidden>
+            <div class="mascot-note" style="margin-bottom:14px">
+              <img class="mascot-note__img" src="assets/mascot/mascot-bear-hood.webp" alt="画像づくりを案内する熊フードのもちすら" loading="lazy" decoding="async" />
+              <div class="mascot-note__body">
+                <h2 class="card__title"><span>②</span><span>画像を用意する（任意）</span></h2>
+                <p class="card__desc" style="margin-bottom:0">必要なら、AI用プロンプトで画像を作り、ここにセットできます。使わなくてもOK。</p>
+              </div>
+            </div>
+            <div id="imageSlots"></div>
+            <div class="imgcard-foot">
+              <button class="btn" id="imageZip" type="button"><span>🗂</span><span>画像を書き出す（zip）</span></button>
+              <span class="note" id="imageCount"></span>
+            </div>
+            <details class="advanced" style="margin-top:12px">
+              <summary class="advanced__summary">
+                <span>❓</span>
+                <span>詳しい手順とファイルの置き方を見る</span>
+                <span class="advanced__arrow">▼</span>
+              </summary>
+              <div class="advanced__body">
+                <p class="card__desc">
+                  <b>①</b>各スロットの「📋 プロンプト」をコピー →
+                  <b>②</b>画像生成AI（Image 2.0 / Midjourney など）で作成 →
+                  <b>③</b>できた画像を「🖼 画像を選ぶ」でここにセット（自動的に<b>軽い画像（WebP）</b>に変換されます。アニメーションGIFはそのまま）→
+                  <b>④</b>上の「画像を書き出す」で、まとめて<b>1つのファイル（ZIP）</b>に。
+                  LP作成のときは、③のコード指示書にファイル名が自動で組み込まれます。
+                </p>
+                <p class="note">
+                  書き出した zip を展開すると <b>images</b> フォルダができます。LP作成の場合は、AIが作った index.html と
+                  同じ場所にそのフォルダを置けば完成。画像作成など他のツールの場合は、そのまま素材フォルダとして使ってください。
+                  フォルダやGitHubリポジトリを事前に用意しておく方法は
+                  <a href="v2/index.html">新しいステップ版の最初の画面</a>を参照。
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <!-- 掲載情報（折りたたみ） -->
+          <details class="advanced">
+            <summary class="advanced__summary">
+              <span>🏷️</span>
+              <span>掲載情報を入れる（店名・価格・日時など・任意）</span>
+              <span class="advanced__arrow">▼</span>
+            </summary>
+            <div class="advanced__body" id="infoFields"></div>
+          </details>
+
+          <!-- 詳細設定（折りたたみ） -->
+          <details class="advanced">
+            <summary class="advanced__summary">
+              <span>🔧</span>
+              <span>詳細設定</span>
+              <span class="advanced__arrow">▼</span>
+            </summary>
+            <div class="advanced__body" id="advancedFields"></div>
+          </details>
+        </section>
+
+        <!-- 右：見取り図＋設計図 -->
+        <section class="column column--output">
+          <div class="card">
+            <div class="output-head">
+              <h2 class="card__title"><span>③</span><span>完成した出力（コピーしてAIへ）</span></h2>
+              <span class="output-count" id="charCount">0 文字</span>
+            </div>
+            <p class="note" style="margin-top:8px">
+              <b>見取り図</b>＝LPの形の下絵。<b>その下の出力</b>＝コピーしてAIに渡す文章です。中身は左①の「<b>出力タイプ</b>」で、設計図／制作プロンプト／画像プロンプト集 に切り替わります。
+            </p>
+
+            <!-- 貼る先の案内（マスコット） -->
+            <div class="mascot-hint">
+              <img class="mascot-hint__img" src="assets/mascot/mascot-bear-hood.webp" alt="AIへの受け渡しを案内する熊フードのもちすら" loading="lazy" decoding="async" />
+              <p class="mascot-hint__text">
+                下の文章を「📋 コピー」→ <b>ChatGPT や Claude に貼って送信</b>。原稿やLPになって返ってきます。
+              </p>
+            </div>
+
+            <!-- 仕上がり例（プリセット適用中＆画像があるときだけ表示） -->
+            <figure class="sample" id="sample" hidden>
+              <img class="sample__img" id="sampleImage" alt="" loading="lazy" decoding="async" />
+              <figcaption class="sample__caption" id="sampleCaption"></figcaption>
+            </figure>
+
+            <!-- 見取り図（積み木ワイヤーフレーム。CSSだけ・画像不要）
+                 wireframe() を持たないテンプレート（画像作成など）では app.js が自動で隠す -->
+            <div class="wf-wrap" id="wfWrap">
+              <div class="wf-wrap__label">見取り図（このLPの形）</div>
+              <div class="wf" id="wireframe"></div>
+            </div>
+
+            <!-- そのまま ChatGPT / Claude に貼れる本文 -->
+            <div class="wf-wrap__label" style="margin-top:4px">出力（コピーしてAIに渡す中身）</div>
+            <pre class="output" id="output"></pre>
+
+            <div class="actions">
+              <button class="btn btn--primary" id="btnCopy" type="button">
+                <span>📋</span><span>コピーする</span>
+              </button>
+              <button class="btn btn--accent" id="btnOmakase" type="button" title="相性のいいプリセットを1つ自動で選びます。必ずまとまった組み合わせになり、失敗しません。">
+                <span>🎁</span><span>おまかせ</span>
+              </button>
+              <button class="btn btn--accent" id="btnRandom" type="button" title="各項目をバラバラにシャッフルします。意外な組み合わせが出ますが当たり外れがあります（発想を広げたいとき用）。">
+                <span>🎲</span><span>ランダム</span>
+              </button>
+              <button class="btn" id="btnReset" type="button">
+                <span>↺</span><span>リセット</span>
+              </button>
+              <button class="btn" id="btnSave" type="button">
+                <span>💾</span><span>設定を保存</span>
+              </button>
+              <button class="btn" id="btnLoad" type="button">
+                <span>📂</span><span>設定を読込</span>
+              </button>
+            </div>
+            <p class="note" style="margin-top:10px">
+              <b>🎁 おまかせ</b>＝相性のいい組み合わせを1つ（迷ったらこれ・失敗なし）。<b>🎲 ランダム</b>＝全項目をバラバラに（意外な発見用・当たり外れあり）。
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- プリセット詳細モーダル -->
+    <div class="modal" id="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden>
+      <div class="modal__panel">
+        <button class="modal__close" id="detailClose" type="button" aria-label="閉じる">✕</button>
+        <figure class="modal__media">
+          <img class="modal__img" id="detailImage" alt="" decoding="async" />
+          <figcaption class="modal__caption">仕上がり例</figcaption>
+        </figure>
+        <div class="modal__body">
+          <h3 class="modal__title" id="detailTitle"></h3>
+          <p class="modal__desc" id="detailDesc"></p>
+          <div class="modal__block" id="detailUsesBlock">
+            <h4 class="modal__h4">こんなときに</h4>
+            <ul class="modal__uses" id="detailUses"></ul>
+          </div>
+          <div class="modal__block">
+            <h4 class="modal__h4">埋まる主な設定</h4>
+            <dl class="modal__specs" id="detailSpecs"></dl>
+          </div>
+          <div class="modal__actions">
+            <button class="btn btn--primary" id="detailApplyCopy" type="button">
+              <span>📋</span><span>この設定でコピー</span>
+            </button>
+            <button class="btn" id="detailApply" type="button">
+              <span>✎</span><span>適用だけ（編集する）</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- スクリプト（file:// で直接開けるよう module は使わない） -->
+    <script src="js/core.js"></script>
+    <script src="js/template.lp.js"></script>
+    <script src="js/template.visual.js"></script>
+    <script src="js/template.icon.js"></script>
+    <script src="js/template.mascot.js"></script>
+    <script src="js/imageWorkflow.js"></script>
+    <script src="js/app.js?v=20260718-4"></script>
+  </body>
+</html>
