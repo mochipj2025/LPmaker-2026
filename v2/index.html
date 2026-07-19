@@ -3,20 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>LP StructureMaker（v2・作業中）</title>
-  <link rel="stylesheet" href="../css/style.css?v=20260718-4">
-  <link rel="stylesheet" href="css/style.css?v=20260718-4">
+  <title>LPmaker ナビ ― 一緒に、一歩ずつLPを作る</title>
+  <meta name="description" content="作り方を選ぶところから、画像の整理、AIへの受け渡しまで。迷わず一歩ずつ進めるLP制作ナビです。">
+  <link rel="stylesheet" href="../css/style.css?v=20260719-1">
+  <link rel="stylesheet" href="css/style.css?v=20260719-1">
 </head>
 <body>
   <main class="shell shell--v2">
+
+    <header class="v2-guide-header">
+      <a class="v2-guide-header__brand" href="../index.html" aria-label="LPmaker トップへ戻る">
+        <span aria-hidden="true">🧱</span>
+        <span>LPmaker ナビ</span>
+      </a>
+      <div class="v2-guide-header__actions">
+        <span class="v2-route-label" id="routeLabel">はじめ方を選択中</span>
+        <button type="button" class="v2-restart" id="restartFlow">最初から</button>
+      </div>
+    </header>
+
+    <nav class="v2-progress" id="progressPanel" aria-label="LP制作の進み具合">
+      <div class="v2-progress__track" aria-hidden="true"><span id="progressBar"></span></div>
+      <ol class="v2-progress__items" id="progressItems"></ol>
+    </nav>
+
+    <aside class="v2-companion" id="companionPanel" aria-live="polite">
+      <img class="v2-companion__img" id="companionImage" src="../assets/mascot/mascot-plain.webp" alt="案内役のマスコット" decoding="async">
+      <div class="v2-companion__body">
+        <span class="v2-companion__eyebrow" id="companionEyebrow">まずはここから</span>
+        <p class="v2-companion__message" id="companionMessage">難しい言葉は使いません。今のあなたに合う作り方を一緒に選びましょう。</p>
+      </div>
+    </aside>
 
     <!-- ステップ0：フォルダを準備する（初回だけ／スキップ可）
          tutorial.html の「はじめに：フォルダとリポジトリを用意する」を
          ツール自体の最初のステップとして組み込んだもの。 -->
     <section id="folderStep" class="v2-step v2-folder" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-setup.webp" alt="準備するマスコット" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">公開したくなったときに</p>
       <h1 class="v2-entry__title">サイトとして公開する準備（あとでOK）</h1>
       <p class="v2-step__lead">
         これは<b>あとで自分のサイトとして公開したくなったとき</b>だけの準備です。設計図やAIへの指示文を作るだけなら要りません。<br>
@@ -41,35 +64,82 @@
 
     <!-- v2 の入口：プリセットを使うか、自分で決めるかの分岐 -->
     <section id="entryStep" class="v2-entry">
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-plain.webp" alt="マスコット" loading="lazy" decoding="async" />
-      </div>
-      <h1 class="v2-entry__title">どちらで進めますか？</h1>
+      <p class="v2-step-kicker">STEP 1</p>
+      <h1 class="v2-entry__title">今日は、どこまで作りますか？</h1>
+      <p class="v2-step__lead">途中で変更しても大丈夫です。迷ったら、一番上の「すぐ作る」がおすすめです。</p>
       <div class="v2-entry__choices">
-        <button type="button" class="v2-entry__choice" id="choicePreset">
-          <span class="v2-entry__choice-title">プリセットから選ぶ</span>
-          <span class="v2-entry__choice-desc">業種別の完成イメージから、近いものを選ぶ</span>
+        <button type="button" class="v2-entry__choice v2-entry__choice--recommended" id="choicePreset">
+          <span class="v2-entry__choice-badge">迷ったらこちら・約3分</span>
+          <span class="v2-entry__choice-icon" aria-hidden="true">⚡</span>
+          <span class="v2-entry__choice-title">すぐ作る</span>
+          <span class="v2-entry__choice-desc">近い見本を選んで、すぐAIへ渡せる指示文を作ります。</span>
+          <span class="v2-entry__choice-output">できるもの：すぐ使えるLP設計図</span>
         </button>
         <button type="button" class="v2-entry__choice" id="choiceManual">
-          <span class="v2-entry__choice-title">自分で決める</span>
-          <span class="v2-entry__choice-desc">業種・読み手・ゴールを1つずつ選ぶ</span>
+          <span class="v2-entry__choice-badge">自分らしく・約10分</span>
+          <span class="v2-entry__choice-icon" aria-hidden="true">🎨</span>
+          <span class="v2-entry__choice-title">自分らしく作る</span>
+          <span class="v2-entry__choice-desc">相手・ゴール・画像・掲載情報を、一つずつ一緒に整えます。</span>
+          <span class="v2-entry__choice-output">できるもの：内容を調整したLP設計図</span>
         </button>
+        <button type="button" class="v2-entry__choice" id="choiceOriginal">
+          <span class="v2-entry__choice-badge">完全オリジナル・じっくり</span>
+          <span class="v2-entry__choice-icon" aria-hidden="true">🚀</span>
+          <span class="v2-entry__choice-title">AIとゼロから作る</span>
+          <span class="v2-entry__choice-desc">フォルダとGitHubを準備し、CodexやClaudeと完成まで進めます。</span>
+          <span class="v2-entry__choice-output">できるもの：育て続けられるLPリポジトリ</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- オリジナルルート：制作環境をタスク制で準備する -->
+    <section id="originalStep" class="v2-step" hidden>
+      <p class="v2-step-kicker">制作環境の準備</p>
+      <h1 class="v2-entry__title">最初の土台を一緒に作りましょう</h1>
+      <p class="v2-step__lead">
+        CodexやClaudeへ下の指示書を渡すと、LP用フォルダとGitHubリポジトリを準備できます。
+        準備が終わるまで、次の制作ステップには進みません。
+      </p>
+
+      <div class="v2-project-setup">
+        <label class="v2-project-setup__label" for="projectName">1. プロジェクト名を決める</label>
+        <input class="custom-input" id="projectName" type="text" inputmode="url" placeholder="例：mochi-cafe-lp" autocomplete="off" pattern="[a-z0-9][a-z0-9-]{1,62}" aria-describedby="projectNameHint">
+        <p class="v2-project-setup__hint" id="projectNameHint">半角英数字とハイフンがおすすめです。あとから変更できます。</p>
+
+        <div class="v2-project-setup__head">
+          <span class="v2-project-setup__label">2. AIへ準備をお願いする</span>
+          <button type="button" class="btn btn--primary" id="originalPrepareCopy" disabled>指示書をコピー</button>
+        </div>
+        <details class="v2-folder__detail">
+          <summary>指示書の中身を見る</summary>
+          <pre class="guide-code" id="originalPrompt"></pre>
+        </details>
+
+        <label class="v2-task-check">
+          <input type="checkbox" id="originalReady">
+          <span><b>3. AIから「準備できました」と報告を受けた</b><small>フォルダ・Git・GitHubリポジトリ・最初のpushが完了した状態です。</small></span>
+        </label>
+      </div>
+
+      <div class="v2-folder__actions">
+        <button type="button" class="btn btn--primary" id="originalNext" disabled>準備できたので次へ →</button>
+        <button type="button" class="btn" id="originalBack">← 作り方を選び直す</button>
       </div>
     </section>
 
     <!-- プリセット一覧（説明文を常時表示。クリックは「選ぶ」だけで、まだ上書き確定しない） -->
     <section id="presetStep" class="v2-step" hidden>
+      <p class="v2-step-kicker">見本を選ぶ</p>
       <h1 class="v2-entry__title">近いものを選んでください</h1>
-      <p class="v2-step__lead">クリックしても、まだ何も確定しません。次の画面で内容を確認してからコピーします。</p>
+      <p class="v2-step__lead">ぴったり同じでなくて大丈夫です。「雰囲気が近い」で選びましょう。次の画面で内容を確認できます。</p>
       <div id="presetList" class="v2-preset-list"></div>
     </section>
 
     <!-- プリセット選択 or 手動入力の内容確認・コピー画面 -->
     <section id="confirmStep" class="v2-step" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-launch.webp" alt="発進するマスコット" loading="lazy" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">いよいよ完成</p>
       <h1 class="v2-entry__title">この内容でよければコピー</h1>
+      <p class="v2-step__lead">ここまでおつかれさまでした。コピーした指示文をCodexやClaudeへ貼れば、LP制作を続けられます。</p>
       <div class="v2-confirm">
         <div class="v2-confirm__thumb" id="confirmThumb">
           <span class="v2-confirm__thumb-icon" id="confirmThumbIcon"></span>
@@ -89,11 +159,9 @@
          トーン・ボリューム・出力タイプは、素人が一発でわかる基準に絞るため
          あえてここには出さない。詳細を詰めたい人向けの場所は別途用意する） -->
     <section id="basicStep" class="v2-step" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-think.webp" alt="考えるマスコット" loading="lazy" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">LPの方向を決める</p>
       <h1 class="v2-entry__title">3つだけ選んでください</h1>
-      <p class="v2-step__lead">迷ったら、後からいつでも選び直せます。</p>
+      <p class="v2-step__lead">正解を決める画面ではありません。今いちばん近いものを選べば大丈夫です。</p>
       <div id="basicFields" class="v2-basic-fields"></div>
       <div class="v2-folder__actions">
         <button type="button" class="btn btn--primary" id="basicNext">次へ →</button>
@@ -103,13 +171,11 @@
 
     <!-- 手動ルート：②画像（任意。template が imageSlots を持つときだけ表示） -->
     <section id="imageStep" class="v2-step" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-image.webp" alt="画像を持つマスコット" loading="lazy" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">画像を整える</p>
       <h1 class="v2-entry__title">画像を用意する（任意）</h1>
       <p class="v2-step__lead">
-        使う人だけどうぞ。①プロンプトをコピー→②画像生成AIで作成→③ここにセット（自動で軽い画像に変換）。
-        今すぐ用意しなくても、あとで進められます。
+        今は飛ばしても大丈夫です。使う場合は、プロンプトをコピーして画像を作り、ここへアップロードしてください。
+        ファイル名の整理と軽量化はLPmakerが担当します。
       </p>
       <div id="v2ImageSlots" class="v2-image-slots"></div>
       <div class="imgcard-foot">
@@ -126,9 +192,7 @@
          ラベル文言（メニュー欄・特徴欄など）は業種によって app.js 側で
          動的に差し替わる（template.inputLabelOf 経由。template.lp.js 参照） -->
     <section id="infoStep" class="v2-step" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-setup.webp" alt="情報を整えるマスコット" loading="lazy" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">正確な情報を入れる</p>
       <h1 class="v2-entry__title">掲載情報を入れる（任意）</h1>
       <p class="v2-step__lead">
         店名・価格・日時など。入れると設計図に「必ず正確に載せる情報」として反映されます。
@@ -145,9 +209,7 @@
          トーン・ボリューム・出力タイプ・参考・補足。①〜③で一発で分かる最小限に
          絞った分、こだわりたい人向けの調整はここにまとめて置く。 -->
     <section id="advancedStep" class="v2-step" hidden>
-      <div class="v2-illust">
-        <img src="../assets/mascot/mascot-think.webp" alt="こだわるマスコット" loading="lazy" decoding="async" />
-      </div>
+      <p class="v2-step-kicker">最後の味付け</p>
       <h1 class="v2-entry__title">詳細設定（任意）</h1>
       <p class="v2-step__lead">
         こだわりたい人だけどうぞ。空欄のままでも「この内容でコピー」に進めます。
@@ -163,7 +225,7 @@
     <footer class="v2-exit">
       <a href="../samples/index.html"><span>✨</span>完成サンプルを見る</a>
       <a href="../index.html"><span>⚙</span>フル機能版で細かく作る</a>
-      <a href="#" id="openFolderStep"><span>🌐</span>公開用の準備（任意）</a>
+      <a href="#" id="openFolderStep"><span>🌐</span>フォルダ・GitHubの準備</a>
     </footer>
 
   </main>
@@ -174,6 +236,6 @@
   <script src="../js/template.icon.js"></script>
   <script src="../js/template.mascot.js"></script>
   <script src="../js/imageWorkflow.js"></script>
-  <script src="js/app.js?v=20260718-4"></script>
+  <script src="js/app.js?v=20260719-1"></script>
 </body>
 </html>

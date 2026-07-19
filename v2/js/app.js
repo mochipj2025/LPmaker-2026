@@ -31,6 +31,92 @@
   // フォルダ準備（旧ステップ0）を任意画面にしたので、開いた元の画面へ戻れるよう覚えておく。
   var folderReturnTo = 'entryStep';
 
+  // 選んだ入口によって、必要なステップ数と出口を変える。
+  var currentRoute = 'entry';
+
+  var ROUTE_LABELS = {
+    entry: 'はじめ方を選択中',
+    preset: 'すぐ作るコース',
+    manual: '自分らしく作るコース',
+    original: 'AIとゼロから作るコース'
+  };
+
+  var ROUTE_FLOWS = {
+    entry: [
+      { id: 'entryStep', label: '作り方を選ぶ' }
+    ],
+    preset: [
+      { id: 'entryStep', label: '作り方' },
+      { id: 'presetStep', label: '見本を選ぶ' },
+      { id: 'confirmStep', label: '確認・コピー' }
+    ],
+    manual: [
+      { id: 'entryStep', label: '作り方' },
+      { id: 'basicStep', label: '方向' },
+      { id: 'imageStep', label: '画像' },
+      { id: 'infoStep', label: '掲載情報' },
+      { id: 'advancedStep', label: '仕上げ' },
+      { id: 'confirmStep', label: '完成' }
+    ],
+    original: [
+      { id: 'entryStep', label: '作り方' },
+      { id: 'originalStep', label: '制作環境' },
+      { id: 'basicStep', label: '方向' },
+      { id: 'imageStep', label: '画像' },
+      { id: 'infoStep', label: '掲載情報' },
+      { id: 'advancedStep', label: '仕上げ' },
+      { id: 'confirmStep', label: '完成' }
+    ]
+  };
+
+  var STEP_GUIDE = {
+    entryStep: {
+      eyebrow: 'まずはここから',
+      message: '難しい言葉は使いません。今日の目的に合う作り方を一緒に選びましょう。',
+      image: 'mascot-plain.webp'
+    },
+    originalStep: {
+      eyebrow: '最初のタスク',
+      message: 'ここでは制作の置き場所だけ整えます。AIから完了報告を受けたらチェックして、次へ進みましょう。',
+      image: 'mascot-setup.webp'
+    },
+    presetStep: {
+      eyebrow: '雰囲気が近ければOK',
+      message: '完全に同じ業種でなくても大丈夫。色や空気感が近い見本を一つ選んでください。',
+      image: 'mascot-think.webp'
+    },
+    basicStep: {
+      eyebrow: 'まずは3つだけ',
+      message: '今の時点で一番近い答えを選べば十分です。あとから何度でも変更できます。',
+      image: 'mascot-think.webp'
+    },
+    imageStep: {
+      eyebrow: 'ここは飛ばしてもOK',
+      message: '画像を使うなら、生成してアップロードするだけ。リネームと軽量化はLPmakerに任せてください。',
+      image: 'mascot-image.webp'
+    },
+    infoStep: {
+      eyebrow: '分かる範囲だけ',
+      message: '店名や価格など、間違えたくない情報を入れます。未定の項目は空欄で進めます。',
+      image: 'mascot-setup.webp'
+    },
+    advancedStep: {
+      eyebrow: 'あと一歩です',
+      message: '雰囲気や文章量を調整する仕上げです。こだわらなければ、そのまま次へ進めます。',
+      image: 'mascot-think.webp'
+    },
+    confirmStep: {
+      eyebrow: 'ここまでできました',
+      message: '内容を確認してコピーしましょう。あとはCodexやClaudeが、LPの実装を引き継げます。',
+      image: 'mascot-launch.webp'
+    },
+    folderStep: {
+      eyebrow: '公開したくなったときに',
+      message: 'フォルダとGitHubの準備だけを、いつでもここから行えます。今はスキップしても大丈夫です。',
+      image: 'mascot-setup.webp'
+    }
+  };
+
   // v2/ から見た assets の相対パス（../js/app.js の ASSET_DIR と同じ考え方）。
   var ASSET_DIR = '../assets/presets';
   var ASSET_VERSION = '20260718-4';
@@ -85,17 +171,57 @@
     return node;
   }
 
+  function updateGuide(stepId) {
+    var flow = stepId === 'folderStep'
+      ? [{ id: 'folderStep', label: '公開の準備' }]
+      : (ROUTE_FLOWS[currentRoute] || ROUTE_FLOWS.entry);
+    var currentIndex = flow.map(function (step) { return step.id; }).indexOf(stepId);
+    if (currentIndex < 0) currentIndex = 0;
+
+    var list = document.getElementById('progressItems');
+    var panel = document.getElementById('progressPanel');
+    var bar = document.getElementById('progressBar');
+    if (list && panel && bar) {
+      list.innerHTML = '';
+      list.style.setProperty('--step-count', flow.length);
+      panel.style.setProperty('--step-count', flow.length);
+      flow.forEach(function (step, index) {
+        var item = el('li', 'v2-progress__item');
+        if (index < currentIndex) item.classList.add('is-done');
+        if (index === currentIndex) {
+          item.classList.add('is-current');
+          item.setAttribute('aria-current', 'step');
+        }
+        item.appendChild(el('span', 'v2-progress__dot', index < currentIndex ? '✓' : '•'));
+        item.appendChild(el('span', 'v2-progress__label', step.label));
+        list.appendChild(item);
+      });
+      bar.style.width = flow.length > 1 ? ((currentIndex / (flow.length - 1)) * 100) + '%' : '0%';
+    }
+
+    var guide = STEP_GUIDE[stepId] || STEP_GUIDE.entryStep;
+    var eyebrow = document.getElementById('companionEyebrow');
+    var message = document.getElementById('companionMessage');
+    var image = document.getElementById('companionImage');
+    var routeLabel = document.getElementById('routeLabel');
+    if (eyebrow) eyebrow.textContent = guide.eyebrow;
+    if (message) message.textContent = guide.message;
+    if (image) image.src = '../assets/mascot/' + guide.image;
+    if (routeLabel) routeLabel.textContent = stepId === 'folderStep' ? 'フォルダ・GitHubの準備' : ROUTE_LABELS[currentRoute];
+  }
+
   function show(id) {
-    ['folderStep', 'entryStep', 'presetStep', 'confirmStep', 'basicStep', 'imageStep', 'infoStep', 'advancedStep']
+    ['folderStep', 'entryStep', 'originalStep', 'presetStep', 'confirmStep', 'basicStep', 'imageStep', 'infoStep', 'advancedStep']
       .forEach(function (sectionId) {
         var section = document.getElementById(sectionId);
         if (section) section.hidden = sectionId !== id;
       });
+    updateGuide(id);
   }
 
   /** いま表示中のステップIDを返す（フォルダ準備から元の画面へ戻るため）。 */
   function currentStep() {
-    var ids = ['folderStep', 'entryStep', 'presetStep', 'confirmStep', 'basicStep', 'imageStep', 'infoStep', 'advancedStep'];
+    var ids = ['folderStep', 'entryStep', 'originalStep', 'presetStep', 'confirmStep', 'basicStep', 'imageStep', 'infoStep', 'advancedStep'];
     for (var i = 0; i < ids.length; i++) {
       var s = document.getElementById(ids[i]);
       if (s && !s.hidden) return ids[i];
@@ -606,19 +732,83 @@
     if (!confirmState || !template) return;
     var text = template.build(confirmState);
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        button.textContent = 'コピーしました';
-        setTimeout(function () {
-          button.textContent = 'この内容でコピーする';
-        }, 1500);
-      });
+    ImageWorkflow.writeClipboard(text, function (ok) {
+      button.textContent = ok ? '✅ コピーできました' : 'コピーできませんでした';
+      if (ok) {
+        document.getElementById('companionEyebrow').textContent = 'おつかれさまでした';
+        document.getElementById('companionMessage').textContent =
+          '指示書の準備は完了です。CodexやClaudeへ貼り付ければ、ここから先も一緒に制作できます。';
+      }
+      setTimeout(function () {
+        button.textContent = 'この内容でコピーする';
+      }, 1800);
+    });
+  }
+
+  function validProjectName(value) {
+    return /^[a-z0-9][a-z0-9-]{1,62}$/.test(value);
+  }
+
+  function buildOriginalPrompt(projectName) {
+    return [
+      'これからオリジナルLPを制作します。今回は制作環境の準備だけを行い、LP本体の実装にはまだ進まないでください。',
+      '',
+      'プロジェクト名: ' + projectName,
+      '',
+      '次のタスクを上から順番に実行してください。',
+      '1. 「' + projectName + '」フォルダを作成し、その中へ移動する。',
+      '2. Gitを初期化し、mainブランチを用意する。',
+      '3. brief / content / design / assets/images / src / workflow の各フォルダを作る。',
+      '4. AGENTS.md、CLAUDE.md、workflow/progress.yml、workflow/decisions.md、workflow/qa-checklist.mdを作る。',
+      '5. GitHubに「' + projectName + '」という公開リポジトリを作る。すでに存在する場合は上書きせず報告する。',
+      '6. ローカルをGitHubのリポジトリへ接続し、最初のコミットをmainへpushする。',
+      '7. progress.ymlでは「制作環境の準備」だけをcompletedにし、それ以降はpendingにする。',
+      '',
+      '安全ルール:',
+      '- 既存ファイルや既存リポジトリを削除・上書きしない。',
+      '- GitHub認証やリポジトリ公開範囲の確認が必要なら、勝手に決めず質問する。',
+      '- 各タスクの結果を確認してから次へ進む。',
+      '',
+      '完了したら、フォルダの場所、GitHubリポジトリURL、最初のコミットIDを示し、',
+      '最後に「フォルダとリポジトリの準備ができました」と報告してください。'
+    ].join('\n');
+  }
+
+  function updateOriginalSetup() {
+    var input = document.getElementById('projectName');
+    var prompt = document.getElementById('originalPrompt');
+    var copyButton = document.getElementById('originalPrepareCopy');
+    var ready = document.getElementById('originalReady');
+    var next = document.getElementById('originalNext');
+    var hint = document.getElementById('projectNameHint');
+    if (!input || !prompt || !copyButton || !ready || !next) return;
+
+    var projectName = input.value.trim().toLowerCase();
+    var valid = validProjectName(projectName);
+    prompt.textContent = valid
+      ? buildOriginalPrompt(projectName)
+      : 'プロジェクト名を入力すると、ここにCodex・Claude共通の準備指示書が表示されます。';
+    copyButton.disabled = !valid;
+    ready.disabled = !valid;
+    next.disabled = !valid || !ready.checked;
+    input.setAttribute('aria-invalid', input.value && !valid ? 'true' : 'false');
+    if (hint) {
+      hint.textContent = input.value && !valid
+        ? '半角英数字とハイフンで、2文字以上にしてください。例：mochi-cafe-lp'
+        : '半角英数字とハイフンがおすすめです。あとから変更できます。';
     }
   }
 
   function init() {
     var presetBtn = document.getElementById('choicePreset');
     var manualBtn = document.getElementById('choiceManual');
+    var originalBtn = document.getElementById('choiceOriginal');
+    var originalNameInput = document.getElementById('projectName');
+    var originalCopyBtn = document.getElementById('originalPrepareCopy');
+    var originalReady = document.getElementById('originalReady');
+    var originalNextBtn = document.getElementById('originalNext');
+    var originalBackBtn = document.getElementById('originalBack');
+    var restartBtn = document.getElementById('restartFlow');
     var folderCopyBtn = document.getElementById('folderCopy');
     var folderDoneBtn = document.getElementById('folderDone');
     var confirmCopyBtn = document.getElementById('confirmCopy');
@@ -635,14 +825,61 @@
 
     if (presetBtn) {
       presetBtn.addEventListener('click', function () {
+        currentRoute = 'preset';
         renderPresets();
         show('presetStep');
       });
     }
     if (manualBtn) {
       manualBtn.addEventListener('click', function () {
+        currentRoute = 'manual';
         renderBasicFields();
         show('basicStep');
+      });
+    }
+    if (originalBtn) {
+      originalBtn.addEventListener('click', function () {
+        currentRoute = 'original';
+        updateOriginalSetup();
+        show('originalStep');
+      });
+    }
+    if (originalNameInput) {
+      originalNameInput.addEventListener('input', function () {
+        // 名前を変えたら、以前のリポジトリに対する完了チェックは無効にする。
+        if (originalReady) originalReady.checked = false;
+        updateOriginalSetup();
+      });
+    }
+    if (originalReady) {
+      originalReady.addEventListener('change', updateOriginalSetup);
+    }
+    if (originalCopyBtn) {
+      originalCopyBtn.addEventListener('click', function () {
+        var prompt = document.getElementById('originalPrompt').textContent;
+        ImageWorkflow.writeClipboard(prompt, function (ok) {
+          originalCopyBtn.textContent = ok ? '✅ コピーしました' : 'コピーできませんでした';
+          setTimeout(function () { originalCopyBtn.textContent = '指示書をコピー'; }, 1800);
+        });
+      });
+    }
+    if (originalNextBtn) {
+      originalNextBtn.addEventListener('click', function () {
+        if (originalNextBtn.disabled) return;
+        renderBasicFields();
+        show('basicStep');
+      });
+    }
+    if (originalBackBtn) {
+      originalBackBtn.addEventListener('click', function () {
+        currentRoute = 'entry';
+        show('entryStep');
+      });
+    }
+    if (restartBtn) {
+      restartBtn.addEventListener('click', function () {
+        currentRoute = 'entry';
+        show('entryStep');
       });
     }
     if (confirmCopyBtn) {
@@ -669,7 +906,7 @@
     }
     if (basicBackBtn) {
       basicBackBtn.addEventListener('click', function () {
-        show('entryStep');
+        show(currentRoute === 'original' ? 'originalStep' : 'entryStep');
       });
     }
     if (imageNextBtn) {
@@ -717,14 +954,12 @@
     if (folderCopyBtn) {
       folderCopyBtn.addEventListener('click', function () {
         var text = document.getElementById('folderPrompt').textContent;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () {
-            folderCopyBtn.textContent = 'コピーしました';
-            setTimeout(function () {
-              folderCopyBtn.textContent = 'コピーする';
-            }, 1500);
-          });
-        }
+        ImageWorkflow.writeClipboard(text, function (ok) {
+          folderCopyBtn.textContent = ok ? '✅ コピーしました' : 'コピーできませんでした';
+          setTimeout(function () {
+            folderCopyBtn.textContent = 'コピーする';
+          }, 1800);
+        });
       });
     }
     if (folderDoneBtn) {
@@ -742,6 +977,9 @@
         show('folderStep');
       });
     }
+
+    updateOriginalSetup();
+    show('entryStep');
   }
 
   document.addEventListener('DOMContentLoaded', init);
